@@ -1,0 +1,159 @@
+Cron Job Crash Course (Original Summary)
+
+Note: I can't provide a verbatim transcript or the entire content of any third‑party video. Below is an original, concise crash course and ready‑to‑use examples tailored to your backend using the `cron` NPM package you installed.
+
+What Is Cron
+- Scheduler: Runs commands/tasks automatically at specified times.
+- Use cases: Cleanups, reports, backups, email digests, cache refresh, DB archiving.
+
+Cron Schedule Syntax
+- Format: `minute hour dayOfMonth month dayOfWeek`
+- Wildcard: `*` means “every”. Ranges and lists: `1-5`, `1,3,5`. Steps: `*/5`.
+- Examples:
+	- `* * * * *` → every minute
+	- `*/5 * * * *` → every 5 minutes
+	- `0 * * * *` → at minute 0 of every hour
+	- `0 2 * * *` → every day at 02:00
+	- `0 0 * * 1` → every Monday at 00:00
+	- `0 9 1 * *` → monthly, on the 1st at 09:00
+    - * * * * *  -> first * meaning min(0-59),
+    - second * meaning hour(0-23) ,
+    - third * meaning day-of-month(1-31),
+    - forth * meaning (1-12 or names),
+    - fifth * meaning (0-7 or names;0&7=sunday)
+
+Time Zones
+- Server default time zone may differ from locale.
+- Prefer explicit tz (e.g., 'Asia/Kolkata') for business rules.
+
+Using the `cron` NPM Package (Node.js)
+- Install: `npm i cron` (already installed)
+- Import: `import { CronJob } from 'cron'`
+- Start jobs programmatically from your Express server.
+
+Basic Patterns
+1) Run every minute
+```js
+import { CronJob } from 'cron'
+
+const job = new CronJob(
+	'* * * * *',
+	async () => {
+		// your task here
+		console.log('[Cron] Tick at', new Date().toISOString())
+	},
+	null,
+	true, // start immediately
+	'Asia/Kolkata'
+)
+```
+
+2) Daily summary job (e.g., recompute user balances)
+```js
+import { CronJob } from 'cron'
+import { sql } from './src/config/db.js'
+
+const dailySummaryJob = new CronJob(
+	'0 2 * * *',
+	async () => {
+		try {
+			console.log('[Cron] Daily summary started:', new Date().toISOString())
+			// Example: touch a table or compute aggregates
+			// const result = await sql`SELECT COUNT(*) FROM tractions`;
+			// console.log('Transactions count:', result?.[0]?.count)
+		} catch (err) {
+			console.error('[Cron] Daily summary failed:', err)
+		}
+	},
+	null,
+	true,
+	'Asia/Kolkata'
+)
+```
+
+3) Clean up old records weekly
+```js
+import { CronJob } from 'cron'
+import { sql } from './src/config/db.js'
+
+const cleanupJob = new CronJob(
+	'0 3 * * 0', // Sunday 03:00
+	async () => {
+		try {
+			console.log('[Cron] Cleanup started')
+			// Example (adjust policy as needed):
+			// await sql`DELETE FROM tractions WHERE created_at < NOW() - INTERVAL '365 days'`
+			console.log('[Cron] Cleanup finished')
+		} catch (err) {
+			console.error('[Cron] Cleanup failed:', err)
+		}
+	},
+	null,
+	true,
+	'Asia/Kolkata'
+)
+```
+
+Integrating With Express (src/server.js)
+- Create jobs after Express app is initialized.
+- Keep jobs in a module and import into `src/server.js`.
+
+Example wiring (minimal):
+```js
+// src/server.js
+import express from 'express'
+import dotenv from 'dotenv'
+import { initDB } from './config/db.js'
+import transactionsRoute from './routes/transactionsRoute.js'
+import './jobs.js' // this file registers and starts all CronJob instances
+
+dotenv.config()
+const app = express()
+const PORT = process.env.PORT || 5001
+
+app.use(express.json())
+app.get('/', (req, res) => res.send("it's working"))
+app.use('/api/transactions', transactionsRoute)
+
+initDB().then(() => {
+	app.listen(PORT, () => console.log(`Server listening on ${PORT}`))
+})
+```
+
+Example jobs file:
+```js
+// jobs.js
+import { CronJob } from 'cron'
+
+new CronJob('* * * * *', () => {
+	console.log('[Cron] heartbeat', new Date().toISOString())
+}, null, true, 'Asia/Kolkata')
+
+// add more jobs here and export nothing; just side‑effects
+```
+
+Best Practices
+- Idempotent tasks: safe to retry if a run overlaps.
+- Logging: include timestamps and job names; centralize logs.
+- Error handling: catch and report; avoid crashing the server.
+- Backoff: if a resource is down, skip rather than loop aggressively.
+- Observability: expose a health endpoint that reports last run times.
+
+Production Tips
+- Use PM2 or a managed runtime to keep your process alive.
+- Separate worker process for heavy jobs (queue + worker, e.g., BullMQ).
+- Time‑zone aware schedules; document business rules.
+- Avoid long‑running work inside web request handlers.
+
+Quick Reference
+- Every minute: `* * * * *`
+- Every 5 min: `*/5 * * * *`
+- Hourly: `0 * * * *`
+- Daily 02:00: `0 2 * * *`
+- Weekly Sun 03:00: `0 3 * * 0`
+
+Troubleshooting
+- Job not firing: confirm process is running and job started (`start: true`).
+- Wrong time: check server time zone vs `CronJob` tz option.
+- Overlapping runs: add flags/locks or reduce frequency.
+

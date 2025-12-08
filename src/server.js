@@ -2,12 +2,20 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { initDB} from './config/db.js';
 import transactionsRoute from './routes/transactionsRoute.js';
-
+import rateLimiter from './middleware/rateLimiter.js';
+import job from './config/cron.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-app.use(express.json()); // middleware to parse JSON bodies
+
+if(process.env.NODE_ENV === 'production') job.start();
+
+// middleware
+app.use(rateLimiter);
+app.use(express.json());
+
+const PORT = process.env.PORT || 5001;
+// middleware to parse JSON bodies
 // app.use("/api/transactions", transactionsRoute);
 // app.use((req, res, next) => {
 //     console.log("hello from middleware is",req.method);
@@ -15,8 +23,8 @@ app.use(express.json()); // middleware to parse JSON bodies
 // });
 
 
-app.get('/',(req,res) => {
-    res.send("it's working");
+app.get('/api/health',(req,res) => {
+    res.status(200).json({status:"ok"});
 });
 
 app.use("/api/transactions", transactionsRoute);

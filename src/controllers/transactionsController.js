@@ -2,7 +2,7 @@ import { sql } from '../config/db.js';
 export async function getTransactionsByUserId(req,res) {
         try {
             const { userId } = req.params;
-            console.log("user id is", userId);
+            console.log("🔍 Fetching transactions for user:", userId);
     
             const transactions = await sql`
                 SELECT * FROM tractions
@@ -16,7 +16,9 @@ export async function getTransactionsByUserId(req,res) {
                     amount: t.amount !== null && t.amount !== undefined ? parseFloat(t.amount) : 0
                 }));
     
-                return res.status(200).json({ transactions: tidyTransactions });
+                console.log(`✅ Found ${tidyTransactions.length} transactions for user ${userId}`);
+                console.log("📊 Transactions:", JSON.stringify(tidyTransactions, null, 2));
+                return res.status(200).json(tidyTransactions);
     
         } 
         catch (error) {
