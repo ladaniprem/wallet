@@ -1,24 +1,26 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
+import { Slot } from "expo-router";
+import SafeScreen from "@/components/SafeScreen";
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
+let tokenCache: any = undefined;
+if (Platform.OS !== "web") {
+  try {
+    // hide require from bundlers so they don't statically include native modules eslint-disable-next-line @typescript-eslint/no-implied-eval
+    const req: any = eval("require");
+    tokenCache = req("@clerk/clerk-expo/token-cache").tokenCache;
+  } catch { }
+}
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const SafeScreenAny = SafeScreen as any;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
+    <ClerkProvider
+      tokenCache={tokenCache}>
+      <SafeScreenAny>
+        <Slot />
+      </SafeScreenAny>
       <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    </ClerkProvider>
+  )
 }
