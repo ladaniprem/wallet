@@ -9,7 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 import { useState } from "react";
-import {API_URL } from "../../constants/api";
+import { API_URL } from "../../constants/api";
 import { styles } from "../../assets/styles/create.styles";
 import { COLORS } from "../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
