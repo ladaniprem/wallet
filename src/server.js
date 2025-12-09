@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { initDB} from './config/db.js';
 import transactionsRoute from './routes/transactionsRoute.js';
 import rateLimiter from './middleware/rateLimiter.js';
@@ -11,6 +12,27 @@ const app = express();
 if(process.env.NODE_ENV === 'production') job.start();
 
 // middleware
+// CORS for web (Expo web runs at http://localhost:8081)
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow no-origin requests (mobile/native, curl)
+        if (!origin) return callback(null, true);
+        const allowed = [
+            'http://localhost:8081',
+            'http://127.0.0.1:8081',
+            // Production frontend origin (no path!)
+            'https://wallet-api-yfnt.onrender.com'
+        ];
+        if (allowed.includes(origin)) return callback(null, true);
+        // In development, allow all to simplify testing
+        if (process.env.NODE_ENV !== 'production') return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+}));
+
+// Preflight will be handled by cors middleware above; no wildcard needed
+
 app.use(rateLimiter);
 app.use(express.json());
 
