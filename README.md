@@ -127,3 +127,12 @@ For more about Expo:
 
 - [Expo documentation](https://docs.expo.dev/)
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/)
+
+## Screenshots
+
+The following screenshots show key app outputs and flows:
+
+![Home Balance + List](assets/images/revenue-i1.png)
+![Create Transaction](assets/images/revenue-i2.png)
+![Summary Totals](assets/images/revenue-i3.png)
+![Loading/Empty States](assets/images/revenue-i4.png)
