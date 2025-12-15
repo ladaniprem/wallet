@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "moblie",
-    "slug": "moblie",
+    "name": "Wallet",
+    "slug": "wallet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "moblie",
+    "icon": "./assets/images/logo.png",
+    "scheme": "wallet",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -14,13 +14,14 @@
     "android": {
       "icon": "./assets/images/icon (2).png",
       "adaptiveIcon": {
-      "backgroundColor": "#E6F4FE",
-      "foregroundImage": "./assets/images/android-icon-foreground (2).png",
-      "backgroundImage": "./assets/images/android-icon-background (2).png",
-      "monochromeImage": "./assets/images/android-icon-foreground (2).png"
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground (2).png",
+        "backgroundImage": "./assets/images/android-icon-background (2).png",
+        "monochromeImage": "./assets/images/android-icon-foreground (2).png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.prem4632x.wallet"
     },
     "web": {
       "output": "static",
@@ -31,7 +32,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logo.png",
+          "image": "./assets/images/icon (2).png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -44,6 +45,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "111e5b07-d2b0-4c2a-8655-a2295d752603"
+      }
+    },
+    "owner": "prem4632x"
   }
 }

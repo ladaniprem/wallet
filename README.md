@@ -132,7 +132,8 @@ For more about Expo:
 
 The following screenshots show key app outputs and flows:
 
-![Home Balance + List](assets/images/revenue-i1.png)
-![Create Transaction](assets/images/revenue-i2.png)
-![Summary Totals](assets/images/revenue-i3.png)
-![Loading/Empty States](assets/images/revenue-i4.png)
+![Final App – logo page](./final%20app%20photo/Screenshot%202025-12-15%20152405.png)
+![final APP - sign-in page](./final%20app%20photo/Screenshot%202025-12-15%20152450.png)
+![final APP - sign-up page](./final%20app%20photo//Screenshot%202025-12-15%20152515.png)
+![final APP - Home page](./final%20app%20photo//Screenshot%202025-12-15%20153142.png)
+![final APP - Add Items page](./final%20app%20photo//Screenshot%202025-12-15%20153157.png)
